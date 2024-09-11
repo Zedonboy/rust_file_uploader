@@ -1,0 +1,119 @@
+openapi: 3.0.0
+info:
+  title: File Upload and Management API
+  version: 1.0.0
+  description: API for uploading, downloading, and managing files
+
+servers:
+  - url: http://localhost:3030
+
+paths:
+  /upload:
+    post:
+      summary: Upload a file
+      description: Upload a file to the server. The file will be split into parts and stored.
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Successful upload
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    id:
+                      type: string
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /files:
+    get:
+      summary: Get all uploaded files
+      description: Retrieve metadata for all uploaded files
+      responses:
+        '200':
+          description: Successful retrieval
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FileMetadata'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /download/{id}:
+    get:
+      summary: Download a file
+      description: Download a file by its ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: The ID of the file to download
+      responses:
+        '200':
+          description: Successful download
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    FileMetadata:
+      type: object
+      properties:
+        id:
+          type: string
+        original_name:
+          type: string
+        parts:
+          type: array
+          items:
+            type: string
+
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+
+    UploadResponse:
+      type: array
+      items:
+        type: object
+        properties:
+          name:
+            type: string
+          id:
+            type: string

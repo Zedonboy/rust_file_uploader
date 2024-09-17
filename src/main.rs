@@ -50,7 +50,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         CREATE TABLE IF NOT EXISTS file_parts (
             id TEXT PRIMARY KEY,
             name VARCHAR(255) NOT NULL,
-            content BYTEA,
+            content BYTEA
         )
         "#,
     )
